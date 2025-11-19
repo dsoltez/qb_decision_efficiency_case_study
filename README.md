@@ -90,22 +90,23 @@ Full summaries for each question are included in the R Markdown report.
 
 QB_Efficiency_Decision_Capstone/
 │
-├── data/ # CSVs used for analysis
+├── data/ # scripts from R converted to CSV files
 ├── R/ # Setup and processing scripts
 ├── qb_decision_efficiency_case_study.Rmd
 ├── README.md
-└── MIT License
-
+├── MIT License
+└── CITATION.cff
 
 ---
 
 ## 🚀 How to Reproduce
 
 1. Clone or download the repo  
-2. Open the `.Rproj` file in RStudio  
-3. Ensure required packages are installed  
-4. Knit the R Markdown to HTML
-5. View the visualizations and results  
+2. Open the `.Rproj` file in RStudio
+3. Ensure required packages are installed
+4. Create your own QB summaries or use the skeleton templates included in the Rscripts 
+5. Knit the R Markdown to HTML
+6. View the visualizations and results  
 
 ---
 
@@ -140,5 +141,6 @@ For questions or collaboration:
 Sports Analytics & Data Science  
 GitHub: *dsoltez*
 E-mail: dsoltez13@gmail.com
+
 
 ---
