@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: "Quarterback Decision Efficiency Case Study (2021–2024)"
+message: "If you use this project, data, or the Decision Efficiency Index (DEI) in your work, please cite it using the metadata below."
+authors:
+  - family-names: "Soltez"
+    given-names: "Drake"
+    orcid: "https://orcid.org/0009-0004-9886-492X"
+version: "1.0.0"
+date-released: "2025-11-18"
+doi: ""
+url: "https://github.com/dsoltez/QB_Decision_Efficiency_Case_Study"
+keywords:
+  - nfl analytics
+  - quarterback analytics
+  - decision efficiency index
+  - decision rate
+  - nflreadR
+  - sports analytics
+  - data science
+  - rstats
+  - nflverse
+abstract: >
+  This repository contains a four-year analysis of NFL quarterback decision-making 
+  using the Decision Efficiency Index (DEI), a new composite metric that evaluates 
+  decision effectiveness, tempo, EPA impact, touchdowns, and turnover tendencies. 
+  The project uses nflverse play-by-play data, Next Gen Stats, and a full Merit America 
+  6-step analysis framework.
