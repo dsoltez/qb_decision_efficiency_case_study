@@ -105,30 +105,27 @@ Full summaries for each question are included in the R Markdown report.
 
 <details>
 <summary><strong>📁 Repository Structure (click to expand)</strong></summary>
-  
-<br>
-/data
-├── qb_decision_efficiency_case_study.Rmd # Final R Markdown analysis
-├── qb_completed_list_trimmed.csv # Cleaned season-level summary
-├── qb_total_DEI.csv # DEI for all QBs (min 1 season)
-├── qb_total_four_seasons_DEI.csv # DEI for 4-season-qualified QBs
-├── qb_total_four_seasons_DEI_trimmed.csv # Cleaned version for visuals
-├── qb_trend_data.csv # Trend analysis input
-│
-├── visuals/ # All charts used in analysis
-│ ├── top10_decision_rate.png
-│ ├── top10_dei_4seasons.png
-│ ├── top10_dei_min1season.png
-│ └── decision_tempo_relationship.png
-│
-├── deliverables/
-│ └── qb_decision_efficiency_case_study.html # Knitted HTML report
-│
-├── README.md # Project documentation
-├── LICENSE # Project licensing
-└── CITATION.cff # Citation metadata
-</details>
 
+### Root
+- README.md  
+- LICENSE  
+- CITATION.cff
+
+### 📂 Data/
+- qb_decision_efficiency_case_study.Rmd  
+- qb_completed_list_trimmed.csv  
+- qb_total_DEI.csv  
+- qb_total_four_seasons_DEI.csv  
+- qb_total_four_seasons_DEI_trimmed.csv  
+- qb_trend_data.csv
+
+### 📂 visuals/
+- top10_decision_rate.png  
+- top10_dei_4seasons.png  
+- top10_dei_min1season.png  
+- decision_tempo_relationship.png  
+
+</details>
 ## 🚀 How to Reproduce
 
 1. Clone or download the repo  
@@ -171,6 +168,7 @@ Special thanks to:
 - All contributors building open-source NFL analytics tools
 
 ---
+
 
 
 
