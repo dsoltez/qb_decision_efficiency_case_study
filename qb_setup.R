@@ -20,7 +20,7 @@ qb_packages <- c(
   "nflreadr", "nflfastR", "nflplotR", "nflverse", 
   # Viz & reporting
   "ggplot2", "patchwork", "gt", "gtExtras", "rmarkdown", "knitr", "ggrepel", "ggimage", "ggridges",
-  "ggtext", "ggfx", "geomtextpath", "cropcircles", "magick", "tinytex", "pandoc", "tinytex",
+  "ggtext", "ggfx", "geomtextpath", "cropcircles", "magick", "tinytex", "pandoc",
   # Conflict handling
   "conflicted"
 )
@@ -145,4 +145,5 @@ summarise_qb_season <- function(pbp_qb_decisions) {
 }
 
 message("✅ QB Decision Efficiency environment ready for seasons: ",
+
         paste(SEASONS, collapse = ", "))
