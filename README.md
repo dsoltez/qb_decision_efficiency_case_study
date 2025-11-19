@@ -44,6 +44,12 @@ This project uses:
 - **Next Gen Stats: Passing data**  
 - **Quarterback summary tables created through R**
 
+## Raw Data Download
+Because the datasets exceeded GitHub’s 25MB file-size limit, raw data is hosted externally.
+
+**Download here:**
+🔗 (https://drive.google.com/drive/folders/1xE0d1EsxGtquN9plZJTu4uOuZl7BYoVq?usp=drive_link)
+
 ### Filters Applied
 
 - Only **quarterback dropbacks**  
@@ -144,3 +150,4 @@ E-mail: dsoltez13@gmail.com
 
 
 ---
+
