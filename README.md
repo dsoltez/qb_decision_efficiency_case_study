@@ -94,14 +94,27 @@ Full summaries for each question are included in the R Markdown report.
 
 ## 📁 Repository Structure
 
-QB_Efficiency_Decision_Capstone/
+/
+├── qb_decision_efficiency_case_study.Rmd       # Final R Markdown analysis
+├── qb_completed_list_trimmed.csv               # Cleaned season-level summary
+├── qb_total_DEI.csv                            # DEI for all QBs (min 1 season)
+├── qb_total_four_seasons_DEI.csv               # DEI for 4-season-qualified QBs
+├── qb_total_four_seasons_DEI_trimmed.csv       # Cleaned version for visual
+├── qb_trend_data.csv                           # Trend analysis input
 │
-├── data/ # scripts from R converted to CSV files
-├── R/ # Setup and processing scripts
-├── qb_decision_efficiency_case_study.Rmd
-├── README.md
-├── MIT License
-└── CITATION.cff
+├── visuals/                                    # All charts used in analysis
+│   ├── top10_decision_rate.png
+│   ├── top10_dei_4seasons.png
+│   ├── top10_dei_min1season.png
+│   ├── decision_tempo_relationship.png
+│
+├── deliverables/
+│   ├── qb_decision_efficiency_case_study.html  # Knitted HTML report
+│
+├── README.md                                   # Project documentation
+├── LICENSE                                     # Project licensing
+└── CITATION.cff                                # Citation metadata
+
 
 ---
 
@@ -150,4 +163,5 @@ E-mail: dsoltez13@gmail.com
 
 
 ---
+
 
