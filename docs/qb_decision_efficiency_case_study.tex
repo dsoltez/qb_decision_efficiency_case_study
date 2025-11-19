@@ -1,0 +1,717 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+  16pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Verdana}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Quarterback Decision Efficiency Case Study (2021--2024)},
+  pdfauthor={Drake Soltez},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Quarterback Decision Efficiency Case Study (2021--2024)}
+\author{Drake Soltez}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\section{1. Ask}\label{ask}
+
+\subsection{1.1 Business Problem}\label{business-problem}
+
+The goal of this case study is to understand how quarterback
+decision-making impacts offensive efficiency and drive success across
+the 2021--2024 NFL seasons. This project evaluates how often
+quarterbacks make effective decisions and how these decisions relate to
+performance, consistency, and tempo.
+
+\subsection{1.2 Key Questions}\label{key-questions}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Which quarterbacks had the highest decision rate (percentage of
+  effective decisions per dropback)?\\
+\item
+  Which quarterbacks make consistently high-impact decisions (DEI)?\\
+\item
+  Which quarterbacks show improvement or decline in decision efficiency
+  over the four seasons?\\
+\item
+  Is there a relationship between decision effectiveness and decision
+  tempo (time to throw)?
+\end{enumerate}
+
+\subsection{1.3 Stakeholders}\label{stakeholders}
+
+\begin{itemize}
+\tightlist
+\item
+  NFL analytics departments\\
+\item
+  Coaching staff and coordinators\\
+\item
+  Player personnel and scouting\\
+\item
+  Media analysts and endorsement strategists
+\end{itemize}
+
+\section{2. Prepare}\label{prepare}
+
+\subsection{2.1 Data Sources}\label{data-sources}
+
+This analysis uses:
+
+\begin{itemize}
+\tightlist
+\item
+  NFL play-by-play data (2021--2024)\\
+\item
+  Next Gen Stats passing data\\
+\item
+  Additional QB-level summaries created during processing
+\end{itemize}
+
+All data was accessed through the \textbf{nflreadr} and
+\textbf{nflverse} R packages.
+
+\subsection{2.2 Data Filters Applied}\label{data-filters-applied}
+
+\begin{itemize}
+\tightlist
+\item
+  Only quarterback dropbacks included\\
+\item
+  Minimum 300 dropbacks per season for multi-season comparability
+\end{itemize}
+
+Built:\\
+- Season-level QB summary tables\\
+- 4-season combined summaries\\
+- DEI rankings (full 4-season QBs + minimum 1-season QB)
+
+\subsection{2.3 Data Cleaning}\label{data-cleaning}
+
+Before analysis, extensive data cleaning was required to ensure accuracy
+and consistency across all four seasons of play-by-play and Next Gen
+Stats data. Key cleaning steps included:
+
+\paragraph{Play-by-Play Cleaning}\label{play-by-play-cleaning}
+
+\begin{itemize}
+\item
+  Filtered to quarterback dropbacks only, removing all non-QB plays to
+  ensure decision-making metrics were measured only on plays where the
+  quarterback was the primary decision-maker.
+\item
+  Excluded all designed run plays (RB handoffs, end-arounds, sweeps) and
+  kept only plays where a dropback occurred (pass attempts, sacks,
+  scrambles, throwaways).
+\item
+  Removed QB scrambles that had no passer associated, since they do not
+  contain valid passing decision data.
+\item
+  Standardized QB names across seasons to avoid mismatches caused by
+  abbreviations, suffixes (e.g., Jr.), or inconsistent formats in the
+  source data.
+\end{itemize}
+
+\paragraph{Next Gen Stats (NGS)
+Cleaning}\label{next-gen-stats-ngs-cleaning}
+
+\begin{itemize}
+\item
+  Filtered NGS passing data to quarterbacks only, eliminating non-QB
+  positional anomalies that sometimes appear in the raw files.
+\item
+  Selected and cleaned key NGS variables such as:
+\item
+  avg\_time\_to\_throw (decision tempo)
+\item
+  QB identifiers (player\_short\_name, player\_display\_name)
+\item
+  pass\_touchdowns and other relevant passing metrics
+\item
+  Normalized player names in NGS data to match those in PBP data for
+  accurate merging.
+\end{itemize}
+
+\paragraph{Merging \& Final
+Standardization}\label{merging-final-standardization}
+
+\begin{itemize}
+\item
+  Performed a left join to merge PBP summaries with NGS passing data by
+  QB and season.
+\item
+  Validated merges to ensure no quarterbacks were duplicated or dropped.
+\item
+  Applied filters for 300+ dropbacks to define ``qualified''
+  quarterbacks for multi-season comparison.
+\item
+  Removed unused columns and reordered remaining variables for clarity
+  and consistent reporting.
+\end{itemize}
+
+\section{3. Process}\label{process}
+
+\subsection{3.1 Decision Effectiveness
+Definition}\label{decision-effectiveness-definition}
+
+A play is labeled \textbf{decision-effective} if it results in:
+
+\begin{itemize}
+\tightlist
+\item
+  Positive EPA\\
+\item
+  First down or touchdown\\
+\item
+  No turnover\\
+\item
+  No blown negative outcome
+\end{itemize}
+
+We define \textbf{Decision Rate} as:
+
+\[
+\text{Decision Rate} = \frac{\text{Effective Decisions}}{\text{Dropbacks}}
+\]
+
+\subsection{3.2 QB Summary Metrics}\label{qb-summary-metrics}
+
+For each QB-season:
+
+\begin{itemize}
+\tightlist
+\item
+  Dropbacks\\
+\item
+  Effective decisions\\
+\item
+  Decision rate\\
+\item
+  EPA per play\\
+\item
+  Interceptions\\
+\item
+  Fumbles lost\\
+\item
+  Turnover rate\\
+\item
+  Touchdowns\\
+\item
+  Average time to throw (tempo)
+\end{itemize}
+
+\section{4. Analyze}\label{analyze}
+
+\subsection{4.1 - Top Decision Rate QB's}\label{top-decision-rate-qbs}
+
+\subsection{4.1.1 Question 1 --- Which Quarterbacks had the highest
+decision rate (percentage of effective decisions per dropback)
+throughout the four
+seasons?}\label{question-1-which-quarterbacks-had-the-highest-decision-rate-percentage-of-effective-decisions-per-dropback-throughout-the-four-seasons}
+
+\begin{figure}
+
+{\centering \includegraphics{qb_decision_efficiency_case_study_files/figure-latex/decision_effective_qbs-1} 
+
+}
+
+\caption{Top 10 Quarterbacks by Decision Rate (2021–2024)}\label{fig:decision_effective_qbs}
+\end{figure}
+
+\textbf{Summary (Q1):}\\
+The vertical bar chart is the strongest choice for comparing
+quarterbacks on a single percentage-based metric like \textbf{decision
+rate}, because it allows viewers to immediately identify who performs
+best. Sorting the bars from highest to lowest makes the top
+decision-makers easy to spot, while the color scale representing
+dropbacks adds important context about workload. This helps distinguish
+quarterbacks who were efficient on a high volume of plays from those who
+performed well on smaller samples.
+
+\textbf{Key findings from the graph:}\\
+From this dataset, the chart shows that the highest decision rates
+belong to \textbf{Patrick Mahomes}, \textbf{Tua Tagovailoa}, and
+\textbf{Jared Goff}, who all sustain very high rates of effective
+decisions per dropback, even if the quarterback had less dropbacks than
+other quarterbacks. The difference between the top few quarterbacks and
+the rest of the top ten forms a clear ``top tier,'' while the remaining
+QBs in the chart are more tightly clustered. This indicates that a small
+group of passers consistently separate themselves in decision quality,
+while most of the league's top performers operate within a narrower
+efficiency band.
+
+This visualization directly answers Question 1 by revealing which
+quarterbacks most consistently avoided negative outcomes and sustained
+offensive rhythm through effective decisions over the four-year window.
+For analysts, scouts, and coaching staff, this graph highlights the
+players who demonstrate reliable processing and decision quality---key
+components of drive sustainability and offensive success.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{4.2 - Decision Efficiency
+Index}\label{decision-efficiency-index}
+
+\subsection{4.2.1 Question 2 --- Which Quarterbacks frequently make
+effective decisions that sustain drives and improve offense
+efficiency?}\label{question-2-which-quarterbacks-frequently-make-effective-decisions-that-sustain-drives-and-improve-offense-efficiency}
+
+\begin{center}\includegraphics{qb_decision_efficiency_case_study_files/figure-latex/decision_efficiency_index-1} \end{center}
+
+\subsection{4.2.2 Minimum One Season (\textgreater= 300
+Dropbacks)}\label{minimum-one-season-300-dropbacks}
+
+\subsection{4.2.3 This is optional!}\label{this-is-optional}
+
+\begin{center}\includegraphics{qb_decision_efficiency_case_study_files/figure-latex/qb_total_DEI-1} \end{center}
+
+```
+
+\textbf{Summary (Q2):}\\
+These bar charts are ideal for displaying \textbf{rankings of a
+composite metric}, which makes them perfect for visualizing the Decision
+Efficiency Index (DEI). This DEI metric was calculated using the
+averages of each underlying component (decision rate, EPA, touchdowns,
+turnovers, and tempo---into a single score, and bar charts allow for
+quick and intuitive comparison across quarterbacks.
+
+\textbf{Key findings from the graphs:}\\
+In the four-season DEI chart, quarterbacks like \textbf{Patrick
+Mahomes}, \textbf{Josh Allen}, and \textbf{Tua Tagovailoa} emerge as the
+most complete decision-makers, pairing strong decision rates with high
+EPA, healthy touchdown production, and controlled turnover profiles over
+the full sample. The color fill for average EPA reinforces that the
+highest-DEI quarterbacks also tend to drive the most efficient offenses.
+
+\textbf{Optional deep dive:}\\
+I was curious about how quarterbacks performed regardless of how many
+seasons they played, so I also calculated DEI for any QB with at least
+300 dropbacks in a single season.In the minimum-one-season DEI chart,
+the rankings highlight high-impact quarterbacks such as \textbf{Brock
+Purdy} and \textbf{Jordan Love} who reached the 300+ dropback threshold
+and delivered standout overall efficiency even without four full seasons
+in the dataset. For these two quarterbacks to reach the Top 10 in this
+visual and have had a young career, means that these two quarterbacks
+are expected to have a long, fulfilling career.
+
+On the other hand, seeing legacy quarterbacks such as \textbf{Tom Brady}
+and \textbf{Aaron Rodgers} appear inside the Top 10 is notable. Their
+presence reflects not only sustained performance late in their careers
+but also long-term mastery of processing speed, defensive recognition,
+and situational awareness. Analyzing how these veterans maintain such
+high decision efficiency despite aging curves, roster turnover, and
+changing schemes could be an entire case study of its own.
+
+Together, these visualizations directly answer Question 2 by identifying
+quarterbacks who combine consistency, efficiency, explosiveness, and
+ball security. For front offices and coaches, DEI surfaces the most
+complete decision-makers who can sustain drives and elevate offensive
+performance, while also distinguishing multi-year anchors from emerging
+or peak single-season performers.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{4.3 - Improvement or Decline Over
+Time}\label{improvement-or-decline-over-time}
+
+\subsection{4.3.1 Question 3 --- Which Quarterbacks show consistent
+improvement or decline in decision efficiency over the four
+seasons?}\label{question-3-which-quarterbacks-show-consistent-improvement-or-decline-in-decision-efficiency-over-the-four-seasons}
+
+\begin{center}\includegraphics{qb_decision_efficiency_case_study_files/figure-latex/qb_trend_data_plot-1} \end{center}
+
+\subsection{4.4 - Decision Effectiveness \&
+Tempo}\label{decision-effectiveness-tempo}
+
+\subsection{4.4.1 Question 4 --- Is there a relationship between
+decision effectiveness and decision tempo that lead to overall drive
+success?}\label{question-4-is-there-a-relationship-between-decision-effectiveness-and-decision-tempo-that-lead-to-overall-drive-success}
+
+\begin{center}\includegraphics{qb_decision_efficiency_case_study_files/figure-latex/qb_total_four_seasons_DEI_plot-1} \end{center}
+
+\textbf{Summary (Q4):}~The scatterplot is the optimal choice for
+analyzing relationships between two continuous variables, making it
+ideal for evaluating how decision effectiveness interacts with decision
+tempo. Each point represents a quarterback's combined efficiency and
+processing speed profile, while the regression line clarifies the
+overall direction of the relationship.
+
+\textbf{Key findings from the graph:}~In this dataset, the fitted
+regression line slopes downward, indicating that quarterbacks with
+\textbf{higher decision effectiveness(based off of the DEI) tend to have
+shorter average time to throw}. Many of the most efficient
+decision-makers cluster in the region with both relatively high decision
+rates and faster tempos, while less efficient quarterbacks appear more
+often in the slower-time-to-throw range. There may be a few
+outliers---such as \textbf{Lamar Jackson}, \textbf{Josh Allen}, \&
+\textbf{Brock Purdy} who maintains above-average effectiveness despite a
+slightly longer time to throw---but the overall pattern supports the
+idea that \textbf{quick processing and decisive reads are associated
+with better outcomes.}
+
+This visualization directly answers Question 4 by demonstrating a
+negative relationship between decision effectiveness and time to throw:
+quarterbacks who make faster decisions generally achieve higher
+effectiveness. Faster processing reduces pressure exposure, supports
+timing-based passing concepts, and maintains offensive rhythm. For
+coaches and coordinators, understanding this relationship helps refine
+scheme design and identify quarterbacks whose processing speed drives
+better offensive results.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{5. Share}\label{share}
+
+\subsection{5.1 Key Takeaways}\label{key-takeaways}
+
+\begin{itemize}
+\item
+  \textbf{High decision efficiency correlates with positive outcomes.}\\
+  Quarterbacks with higher decision rates and DEI scores more
+  consistently sustain drives, avoid negative plays, and generate
+  positive EPA.
+\item
+  \textbf{DEI surfaces the most complete decision-makers.}\\
+  Because it blends decision rate, EPA, touchdowns, turnovers, and
+  tempo, DEI highlights quarterbacks who balance efficiency, impact, and
+  ball security.
+\item
+  \textbf{Trends highlight long-term risers and fallers.}\\
+  Four-year decision efficiency trends reveal which quarterbacks are
+  improving, plateauing, or declining, which is critical for long-term
+  planning.
+\item
+  \textbf{Faster tempo generally supports better decision-making.}\\
+  The negative relationship between time to throw and decision
+  effectiveness suggests that quicker processors tend to produce better
+  outcomes.
+\end{itemize}
+
+\subsection{5.2 Presenting to
+Stakeholders}\label{presenting-to-stakeholders}
+
+This analysis can be communicated and applied across several key
+stakeholder groups:
+
+\subsubsection{5.2.1 Player Evaluation \&
+Scouting}\label{player-evaluation-scouting}
+
+\begin{itemize}
+\tightlist
+\item
+  Identify quarterbacks with strong multi-year decision profiles.\\
+\item
+  Highlight emerging players who already exhibit high DEI and decision
+  rate.\\
+\item
+  Flag potential regression risks through declining decision trends.
+\end{itemize}
+
+\subsubsection{5.2.2 Coaching \& Scheme
+Development}\label{coaching-scheme-development}
+
+\begin{itemize}
+\tightlist
+\item
+  Align offensive schemes with each quarterback's processing strengths
+  and tempo.\\
+\item
+  Use decision efficiency and tempo metrics to refine route concepts,
+  timing, and progression structures.\\
+\item
+  Target coaching interventions for QBs with slower tempo or elevated
+  turnover rates.
+\end{itemize}
+
+\subsubsection{5.2.3 Analytics \& Front Office
+Decision-Making}\label{analytics-front-office-decision-making}
+
+\begin{itemize}
+\tightlist
+\item
+  Incorporate DEI and decision trends into contract, trade, and draft
+  models.\\
+\item
+  Combine DEI with salary and age curves to assess long-term value.\\
+\item
+  Use decision metrics as an additional lens alongside EPA/play, CPOE,
+  and traditional passer rating.
+\end{itemize}
+
+\subsubsection{5.2.4 Media, Endorsements \& Narrative
+Analysis}\label{media-endorsements-narrative-analysis}
+
+\begin{itemize}
+\tightlist
+\item
+  Support deeper storytelling around which quarterbacks truly drive
+  efficient offense.\\
+\item
+  Use DEI and decision rate to contextualize highlight plays, awards,
+  and legacy debates.\\
+\item
+  Inform endorsement and branding decisions around quarterbacks who pair
+  efficiency with stability.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{6. Act}\label{act}
+
+\subsection{6.1 Recommendations}\label{recommendations}
+
+Based on the four-year analysis of quarterback decision-making, tempo,
+and efficiency, the following recommendations are proposed for coaching
+staff, analysts, and front office decision-makers:
+
+\subsubsection{6.1.1 Integrate Decision Efficiency Index (DEI) Into
+Standard QB
+Evaluation}\label{integrate-decision-efficiency-index-dei-into-standard-qb-evaluation}
+
+\begin{itemize}
+\tightlist
+\item
+  DEI proved to be a reliable, multi-factor measure of a quarterback's
+  ability to sustain drives, avoid negative plays, and generate positive
+  EPA.\\
+\item
+  Teams should incorporate DEI alongside traditional metrics (EPA/play,
+  CPOE, passer rating) to gain a fuller picture of QB performance.
+\end{itemize}
+
+\subsubsection{6.1.2 Emphasize QBs With Multi-Year Positive
+Trends}\label{emphasize-qbs-with-multi-year-positive-trends}
+
+\begin{itemize}
+\tightlist
+\item
+  Quarterbacks who showed continuous improvement from 2021 to 2024 (such
+  as Tua Tagovailoa and Patrick Mahomes) demonstrate stable development
+  patterns.\\
+\item
+  These players represent low-risk, high-stability options for long-term
+  schemes and system planning.
+\end{itemize}
+
+\subsubsection{6.1.3 Use Decision Tempo as a Diagnostic
+Tool}\label{use-decision-tempo-as-a-diagnostic-tool}
+
+\begin{itemize}
+\tightlist
+\item
+  Faster average time to throw correlates with higher decision
+  effectiveness in this dataset.\\
+\item
+  Teams should monitor tempo to:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Identify processing-speed improvements or regressions\\
+  \item
+    Evaluate QB fit with quick-game vs.~deep-dropback schemes\\
+  \item
+    Detect pressure-handling issues before they manifest as turnovers
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{6.1.4 Prioritize Quarterbacks With High Decision Volume
+\& High Decision
+Quality}\label{prioritize-quarterbacks-with-high-decision-volume-high-decision-quality}
+
+\begin{itemize}
+\tightlist
+\item
+  Dropbacks represent opportunity, but DEI and decision rate capture
+  quality.\\
+\item
+  Quarterbacks who rank highly in both categories are the most
+  dependable leaders of sustainable offense.
+\end{itemize}
+
+\subsubsection{6.1.5 Apply Findings to Scheme
+Design}\label{apply-findings-to-scheme-design}
+
+\begin{itemize}
+\tightlist
+\item
+  Build offenses that reinforce quick, high-confidence decision
+  pathways.\\
+\item
+  Use motion and spread concepts to help slower processors.\\
+\item
+  Increase timing-based routes for QBs with high tempo and high DEI
+  profiles.
+\end{itemize}
+
+\subsection{6.2 Next Steps}\label{next-steps}
+
+\subsubsection{6.2.1 Expand the Dataset to 10
+Seasons}\label{expand-the-dataset-to-10-seasons}
+
+A decade-long dataset would:
+
+\begin{itemize}
+\tightlist
+\item
+  Reveal deeper efficiency and tempo evolution.\\
+\item
+  Highlight outliers in long-term QB development.\\
+\item
+  Strengthen comparisons across eras, systems, and coaching staffs.
+\end{itemize}
+
+\subsubsection{6.2.2 Add Situational Decision Efficiency
+Metrics}\label{add-situational-decision-efficiency-metrics}
+
+DEI can be extended to:
+
+\begin{itemize}
+\tightlist
+\item
+  3rd-down DEI\\
+\item
+  Red zone DEI\\
+\item
+  Two-minute drill DEI\\
+\item
+  Play-action vs.~straight dropback DEI
+\end{itemize}
+
+These situational splits would help identify QBs with specialized
+strengths and pressure performance.
+
+\subsubsection{6.2.3 Include Pressure-Based Decision
+Metrics}\label{include-pressure-based-decision-metrics}
+
+Integrating Next Gen Stats pressure variables could help answer:
+
+\begin{itemize}
+\tightlist
+\item
+  How does decision tempo change under pressure?\\
+\item
+  Which QBs maintain high DEI in collapsing pockets?\\
+\item
+  How do blitz-heavy defenses affect effectiveness?
+\end{itemize}
+
+\subsubsection{6.2.4 Explore Drive-Level
+Efficiency}\label{explore-drive-level-efficiency}
+
+A future iteration could model:
+
+\begin{itemize}
+\tightlist
+\item
+  Expected points per drive\\
+\item
+  Drive success rate\\
+\item
+  Conversion efficiency (first downs gained per opportunity)
+\end{itemize}
+
+This would strengthen the connection between QB decision quality and
+actual scoring output.
+
+\subsubsection{6.2.5 Extend the Framework Beyond
+QBs}\label{extend-the-framework-beyond-qbs}
+
+This DEI framework could be adapted for:
+
+\begin{itemize}
+\tightlist
+\item
+  Running backs (run decision efficiency)\\
+\item
+  Wide receivers (separation and YAC decisions)\\
+\item
+  Defensive backs (target decision efficiency)
+\end{itemize}
+
+and for future MLB or other sports analytics projects.
+
+\subsubsection{6.2.6 Build a Public Dashboard or Coaching
+Report}\label{build-a-public-dashboard-or-coaching-report}
+
+Future deliverables could include:
+
+\begin{itemize}
+\tightlist
+\item
+  A Shiny app for interactive DEI exploration.\\
+\item
+  A Tableau dashboard for trend and ranking visuals.\\
+\item
+  A coaching report with player-specific recommendations and decision
+  profiles.
+\end{itemize}
+
+\end{document}
