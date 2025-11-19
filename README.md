@@ -70,6 +70,23 @@ Because the datasets exceeded GitHub’s 25MB file-size limit, raw data is hoste
 **Download here:**
 (https://drive.google.com/drive/folders/1xE0d1EsxGtquN9plZJTu4uOuZl7BYoVq?usp=drive_link)
 
+### 🛠️ `qb_setup.R` — Environment Bootstrap Script
+
+This project includes a custom setup script designed to automatically prepare your R environment for running the full analysis.
+
+**Purpose of `qb_setup.R`:**
+- Installs (if missing) and loads all required R packages  
+- Manages package conflicts using `{conflicted}`  
+- Loads NFL data libraries (`nflverse`, `nflreadr`, etc.)  
+- Loads the Next Gen Stats passing dataset  
+- Prints clean status messages confirming each component has loaded  
+- Ensures the environment is fully reproducible on any machine
+
+**How to use it:**
+
+```r
+source("scripts/qb_setup.R")
+
 ### Filters Applied
 
 - Exclusively **Quarterback Dropbacks** 
@@ -169,5 +186,6 @@ Special thanks to:
 - All contributors building open-source NFL analytics tools
 
 ---
+
 
 
