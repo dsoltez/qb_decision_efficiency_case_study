@@ -14,11 +14,22 @@ This project analyzes NFL quarterback performance by quantifying how effectively
 ### ⭐ **Decision Efficiency Index (DEI)**  
 A novel, custom-built, multi-factor metric that evaluates quarterback decision quality using:
 
-- Decision Rate (effective decisions per dropback)  
-- Expected Points Added (EPA)  
-- Touchdowns  
-- Turnovers  
-- Decision Tempo (average time to throw)  
+DEI =
+  (avg_decision_rate * 100) +
+  (avg_epa * 50) +
+  (avg_touchdowns * 0.4) -
+  (avg_turnover_rate * 150) -
+  (avg_time_to_throw * 3)
+
+### **Interpretation:**
+
+- Higher = Better decision-making
+
+- Rewards efficiency, explosiveness, and ball security
+
+- Penalizes slow processing and mistakes
+
+- An original metric developed exclusively for this study
 
 This project was developed as part of the **Merit America Data Analytics Program** capstone.
 
@@ -52,7 +63,7 @@ Because the datasets exceeded GitHub’s 25MB file-size limit, raw data is hoste
 
 ### Filters Applied
 
-- Only **quarterback dropbacks**  
+- Exclusively **Quarterback Dropbacks** 
 - Minimum **300+ dropbacks per season** for 4-year comparison  
 - Standardized and cleaned QB names across datasets  
 - Removed non-QB plays and situational noise  
@@ -122,45 +133,42 @@ Full summaries for each question are included in the R Markdown report.
 
 1. Clone or download the repo  
 2. Open the `.Rproj` file in RStudio
-3. Ensure required packages are installed
-4. Create your own QB summaries or use the skeleton templates included in the Rscripts 
-5. Knit the R Markdown to HTML
+3. Knit the R Markdown to HTML and view it
+4. Ensure required packages are installed
+5. Create your own QB summaries or use the skeleton templates included in the Rscripts
 6. View the visualizations and results  
 
 ---
 
-## 📚 Future Work
+## 🧾 Citation
 
-Planned enhancements include:
-
-- Adding situational DEI (red zone, 3rd down, 2-minute, etc.)  
-- Pressure-based decision efficiency  
-- Drive-level analysis  
-- Shiny App for interactive exploration  
-- Expanding DEI to a **10-season** dataset  
-- Extending the framework to RB, WR, and DB decision metrics  
-
----
-
-## 📘 Acknowledgements
-
-- **nflreadr / nflverse ecosystem**  
-- **Next Gen Stats (NGS)**  
-- Merit America Data Analytics Program  
-
----
+If you use this project or the DEI metric in your own work, please cite using the included CITATION.cff file (GitHub will auto-generate a citation button).
 
 ## 📄 License
-This project is licensed under the MIT License — see the LICENSE file for details.
 
-## 💬 Contact
+This project is currently licensed under the MIT License, allowing public use, modification, and attribution.
 
-For questions or collaboration:  
-**Drake Soltez**  
-Sports Analytics & Data Science  
-GitHub: *dsoltez*
-E-mail: dsoltez13@gmail.com
+## ⭐ Future Work
 
+- Full Shiny dashboard for interactive DEI visualization
+
+- Extend dataset to 10 NFL seasons
+
+- Add pressure-based and situational DEI metrics
+
+- Compare DEI to QBR, EPA/play, and CPOE
+
+- Team-specific DEI scouting reports
+
+## 🙌 Acknowledgments
+
+Special thanks to:
+
+- NFLverse / nflreadr team for open NFL data
+
+- Merit America for providing the analytical framework
+
+- All contributors building open-source NFL analytics tools
 
 ---
 
