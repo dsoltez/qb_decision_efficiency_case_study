@@ -24,11 +24,11 @@ If you're a coach, analyst, or developer interested in collaborating, improving,
 This novel, custom-built, multi-factor metric that evaluates quarterback decision quality using:
 
 DEI =
-  (avg_decision_rate * 100) +
-  (avg_epa * 50) +
-  (avg_touchdowns * 0.4) -
-  (avg_turnover_rate * 150) -
-  (avg_time_to_throw * 3)
+  - (avg_decision_rate * 100) +
+  - (avg_epa * 50) +
+  - (avg_touchdowns * 0.4) -
+  - (avg_turnover_rate * 150) -
+  - (avg_time_to_throw * 3)
 
 ### **Interpretation:**
 
@@ -169,3 +169,4 @@ Special thanks to:
 - All contributors building open-source NFL analytics tools
 
 ---
+
