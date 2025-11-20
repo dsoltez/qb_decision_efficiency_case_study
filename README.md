@@ -138,7 +138,7 @@ Full summaries for each question are included in the R Markdown report.
 | [`/`](.) | Root directory containing main scripts and project metadata | `qb_decision_efficiency_case_study.Rmd`, `LICENSE`, `CITATION.cff`, `qb_setup.R` |
 | [`data/`](data/) | Cleaned datasets used in analysis | `qb_completed_list_trimmed.csv`, `qb_total_DEI.csv`, `qb_total_four_seasons_DEI.csv`, `qb_total_four_seasons_DEI_trimmed.csv`, `qb_trend_data.csv` |
 | [`visuals/`](visuals/) | Exported charts used in the final report | `top10_decision_rate.png`, `top10_dei_4seasons.png`, `top10_dei_min1season.png`, `decision_tempo_relationship.png` |
-| [`deliverables/`](deliverables/) | Final knitted HTML report | `qb_decision_efficiency_case_study.html` |
+| [`docs/`](docs/) | Final knitted HTML report | `qb_decision_efficiency_case_study.html` |
 | [`scripts/`](scripts/) | R processing scripts, helper functions, and transformation pipelines | `qb_summaries`, `ggplots scripts` |
 | [`README.md`](README.md) | Full project documentation & overview | — |
 
@@ -187,6 +187,7 @@ Special thanks to:
 - All contributors building open-source NFL analytics tools
 
 ---
+
 
 
 
