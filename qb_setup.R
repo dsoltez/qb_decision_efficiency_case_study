@@ -1,18 +1,18 @@
 # ==== Drake's QB Decision Efficiency Index Setup ====
 message("🏈 Loading QB Decision Efficiency Index environment...")
 
-# 1) Ensure folder structure exists ----------------------------------------
+# Ensure folder structure exists ----------------------------------------
 dirs <- c("data/raw", "data/processed", "data/cache", "reports", "figs")
 invisible(lapply(dirs, dir.create, showWarnings = FALSE, recursive = TRUE))
 
-# 2) Make sure utils is available (for install.packages) --------------------
+# Make sure utils is available (for install.packages) --------------------
 if (!"utils" %in% loadedNamespaces()) {
   base::requireNamespace("utils", quietly = TRUE)
 }
 # Touch the function so the namespace is definitely loaded
 utils::install.packages
 
-# 3) Required packages ------------------------------------------------------
+# Required packages ------------------------------------------------------
 qb_packages <- c(
   # Core tidy workflow
   "tidyverse", "janitor", "lubridate", "skimr", "stringr", "forcats", "here", "glue", "scales",
@@ -45,7 +45,7 @@ quiet_library <- function(pkgs) {
 install_if_missing(qb_packages)
 quiet_library(qb_packages)
 
-# 4) Global options ---------------------------------------------------------
+# Global options ---------------------------------------------------------
 options(
   tidyverse.quiet       = TRUE,
   dplyr.summarise.inform = FALSE,
@@ -59,7 +59,7 @@ if ("ggplot2" %in% loadedNamespaces()) {
   ggplot2::theme_set(ggplot2::theme_minimal())
 }
 
-# 5) Conflicted prefs -------------------------------------------------------
+# Conflicted prefs -------------------------------------------------------
 suppressPackageStartupMessages(library(conflicted))
 conflicts_prefer(
   dplyr::filter,
@@ -67,7 +67,7 @@ conflicts_prefer(
   stringr::fixed
 )
 
-# 6) Helper functions -------------------------------------------------------
+# Helper functions -------------------------------------------------------
 SEASONS <- 2021:2024
 assign("SEASONS", SEASONS, envir = .GlobalEnv)
 
@@ -147,4 +147,5 @@ summarise_qb_season <- function(pbp_qb_decisions) {
 message("✅ QB Decision Efficiency environment ready for seasons: ",
 
         paste(SEASONS, collapse = ", "))
+
 
