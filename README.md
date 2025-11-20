@@ -85,7 +85,8 @@ This project includes a custom setup script designed to automatically prepare yo
 **How to use it:**
 
 ```r
-source("scripts/qb_setup.R")
+source("qb_setup.R")
+```
 
 ### Filters Applied
 
@@ -186,6 +187,7 @@ Special thanks to:
 - All contributors building open-source NFL analytics tools
 
 ---
+
 
 
 
