@@ -1,5 +1,5 @@
-# ==== Drake's QB Decision Efficiency Capstone Setup ====
-message("🏈 Loading QB Decision Efficiency Capstone environment...")
+# ==== Drake's QB Decision Efficiency Index Setup ====
+message("🏈 Loading QB Decision Efficiency Index environment...")
 
 # 1) Ensure folder structure exists ----------------------------------------
 dirs <- c("data/raw", "data/processed", "data/cache", "reports", "figs")
@@ -147,3 +147,4 @@ summarise_qb_season <- function(pbp_qb_decisions) {
 message("✅ QB Decision Efficiency environment ready for seasons: ",
 
         paste(SEASONS, collapse = ", "))
+
