@@ -72,6 +72,24 @@ The goal of this case study is to understand how quarterback decision-making imp
 
 # 2. **Prepare**
 
+## 2.0 Environment Setup
+
+This project uses a custom initialization script (`qb_setup.R`) to ensure a
+consistent working environment across sessions. The script automatically:
+
+- Installs any missing R packages
+- Loads all required libraries
+- Resolves common function conflicts (via the `conflicted` package)
+- Loads NFL play-by-play and Next Gen Stats datasets
+- Confirms available seasons (2021–2024)
+
+Sourcing the setup file ensures reproducibility and prevents package-related
+errors when knitting the full report.
+
+```{r setup-environment, include=FALSE}
+source("qb_setup.R")
+```
+
 ## 2.1 Data Sources
 
 This analysis uses:
@@ -494,3 +512,4 @@ Future deliverable could include:
 - **A Shiny app for interactive DEI exploration(coming soon).**  
 - A Tableau dashboard for trend and ranking visuals.  
 - A coaching report with player-specific recommendations and decision profiles.
+
