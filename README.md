@@ -103,19 +103,19 @@ All cleaning and processing steps are included in the R Markdown report
 ## Visualizations Included
 
 ### **Q1: Top Decision Rate QBs**  
-A vertical bar chart showing the top 10 quarterbacks in decision rate.
+A horizontal bar chart showing the top 10 quarterbacks in decision rate, with a dropback fill.
 
 ### **Q2: Decision Efficiency Index (DEI)**  
 - Top 10 over four full seasons (300+ dropbacks each year)  
 - Optional: Top 10 QBs with 300+ dropbacks in ANY single season  
 
 ### **Q3: Trend Analysis (Improvement or Decline)**  
-Faceted line chart showing how each full-season QB’s decision rate changed over time.
+Faceted line chart showing how each full-season QB’s decision rate changed through the four seasons.
 
 ### **Q4: Decision Efficiency vs. Decision Tempo**  
 Scatterplot with regression line showing how processing speed relates to effectiveness.
 
-All plots are generated in the R Markdown report.
+**All plots are generated in the R Markdown report.**
 
 ---
 
@@ -148,7 +148,7 @@ Full summaries for each question are included in the R Markdown report.
 1. Clone or download the repo  
 2. Open the `.Rproj` file in RStudio
 3. Knit the R Markdown to HTML and view it
-4. Ensure required packages are installed
+4. Run the qb_Setup.R to ensure the environment is ready.
 5. Create your own QB summaries or use the skeleton templates included in the Rscripts
 6. View the visualizations and results  
 
@@ -187,6 +187,7 @@ Special thanks to:
 - All contributors building open-source NFL analytics tools
 
 ---
+
 
 
 
