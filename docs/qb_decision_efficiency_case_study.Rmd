@@ -1,0 +1,525 @@
+---
+title: "Quarterback Decision Efficiency Case Study (2021–2024)"
+author: "Drake Soltez"
+output:
+  html_document:
+    toc: true
+    toc_depth: '3'
+    df_print: paged
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    toc_depth: 3
+  html_notebook:
+    toc: true
+    toc_depth: '3'
+fontsize: 16pt
+mainfont: Verdana
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo       = FALSE,
+  message    = FALSE,
+  warning    = FALSE,
+  fig.align  = "center",
+  fig.width  = 9,
+  fig.height = 5
+)
+```
+
+```{r load-packages, include=FALSE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(nflreadr)
+library(nflfastR)
+library(nflseedR)
+library(nflverse)
+library(nflplotR)
+library(scales)
+library(viridis)
+library(ggrepel)
+```
+
+```{r load-datasets, include=FALSE}
+qb_completed_list_trimmed   <- read.csv("qb_completed_list_trimmed.csv")
+qb_total_DEI                <- read.csv("qb_total_DEI.csv")
+qb_total_four_seasons_DEI   <- read.csv("qb_total_four_seasons_DEI.csv")
+qb_trend_data               <- read.csv("qb_trend_data.csv")
+qb_total_four_seasons_DEI_trimmed <- read.csv("qb_total_four_seasons_DEI_trimmed.csv")
+```
+
+# 1. **Ask**
+
+## 1.1 Business Problem
+
+The goal of this case study is to understand how quarterback decision-making impacts offensive efficiency and drive success across the 2021–2024 NFL seasons. This project evaluates how often quarterbacks make effective decisions and how these decisions relate to performance, consistency, and tempo.
+
+## 1.2 Key Questions
+
+1.  Which quarterbacks had the highest decision rate (percentage of effective decisions per dropback)?\
+2.  Which quarterbacks make consistently high-impact decisions (DEI)?\
+3.  Which quarterbacks show improvement or decline in decision efficiency over the four seasons?\
+4.  Is there a relationship between decision effectiveness and decision tempo (time to throw)?
+
+## 1.3 Stakeholders
+
+-   NFL analytics departments\
+-   Coaching staff and coordinators\
+-   Player personnel and scouting\
+-   Media analysts and endorsement strategists
+
+# 2. **Prepare**
+
+## 2.1 Environment Setup
+
+This project uses a custom initialization script (`qb_setup.R`) to ensure a
+consistent working environment across sessions. The script automatically:
+
+- Installs any missing R packages
+- Loads all required libraries
+- Resolves common function conflicts (via the `conflicted` package)
+- Loads NFL play-by-play and Next Gen Stats datasets
+- Confirms available seasons (2021–2024)
+
+Sourcing the setup file ensures reproducibility and prevents package-related
+errors when knitting the full report.
+
+```{r setup-environment, include=FALSE}
+source("qb_setup.R")
+```
+
+## 2.2 Data Sources
+
+This analysis uses:
+
+-   NFL play-by-play data (2021–2024)\
+-   Next Gen Stats passing data\
+-   Additional QB-level summaries created during processing
+
+All data was accessed through the **nflreadr** and **nflverse** R packages.
+
+## 2.3 Data Filters Applied
+
+-   Only quarterback dropbacks included\
+-   300+ dropbacks per season for multi-season comparability
+
+Built:\
+- Season-level QB summary tables\
+- 4-season combined summaries\
+- DEI rankings (full 4-season QBs + minimum 1-season QB)
+
+## 2.4 Data Cleaning
+
+Before analysis, extensive data cleaning was required to ensure accuracy and consistency across all four seasons of play-by-play and Next Gen Stats data. Key cleaning steps included:
+
+#### Play-by-Play Cleaning
+
+- Filtered to quarterback dropbacks only, removing all non-QB plays to ensure decision-making metrics were measured only on plays where the quarterback was the primary decision-maker.
+
+- Excluded all designed run plays (RB handoffs, end-arounds, sweeps) and kept only plays where a dropback occurred (pass attempts, sacks, scrambles, throwaways).
+
+- Removed QB scrambles that had no passer associated, since they do not contain valid passing decision data.
+
+- Standardized QB names across seasons to avoid mismatches caused by abbreviations, suffixes (e.g., Jr.), or inconsistent formats in the source data.
+
+#### Next Gen Stats (NGS) Cleaning
+
+- Filtered NGS passing data to quarterbacks only, eliminating non-QB positional anomalies that sometimes appear in the raw files.
+
+- Selected and cleaned key NGS variables such as:
+
+- avg_time_to_throw (decision tempo)
+
+- QB identifiers (player_short_name, player_display_name)
+
+- pass_touchdowns and other relevant passing metrics
+
+- Normalized player names in NGS data to match those in PBP data for accurate merging.
+
+#### Merging & Final Standardization
+
+- Performed a left join to merge PBP summaries with NGS passing data by QB and season.
+
+- Validated merges to ensure no quarterbacks were duplicated or dropped.
+
+- Applied filters for 300+ dropbacks to define “qualified” quarterbacks for multi-season comparison.
+
+- Removed unused columns and reordered remaining variables for clarity and consistent reporting.
+
+# 3. **Process**
+
+## 3.1 Decision Effectiveness Definition
+
+A play is labeled **decision-effective** if it results in:
+
+-   Positive EPA\
+-   First down or touchdown\
+-   No turnover\
+-   No blown negative outcome
+
+We define **Decision Rate** as:
+
+$$
+\text{Decision Rate} = \frac{\text{Effective Decisions}}{\text{Dropbacks}}
+$$
+
+## 3.2 QB Summary Metrics
+
+For each QB-season:
+
+-   Dropbacks\
+-   Effective decisions\
+-   Decision rate\
+-   EPA per play\
+-   Interceptions\
+-   Fumbles lost\
+-   Turnover rate\
+-   Touchdowns\
+-   Average time to throw (tempo)
+
+# 4. **Analyze**
+
+## 4.1 - Top Decision Rate QB's
+
+## 4.1.1 Question 1 — Which Quarterbacks had the highest decision rate (percentage of effective decisions per dropback) throughout the four seasons?
+
+```{r decision_effective_qbs, fig.cap="Top 10 Quarterbacks by Decision Rate (2021–2024)"}
+qb_completed_list_trimmed %>%
+  arrange(desc(avg_decision_rate)) %>%
+  slice(1:10) %>%
+  ggplot(aes(
+    x    = reorder(qb, -avg_decision_rate),
+    y    = avg_decision_rate * 100,
+    fill = dropbacks
+  )) +
+  geom_col(width = 0.7) +
+  scale_fill_viridis_c(option = "C") +
+  labs(
+    title    = "Top 10 Quarterbacks by Decision Rate (2021–2024)",
+    subtitle = "Percentage of effective decisions per dropback",
+    x        = "Quarterback",
+    y        = "Decision Rate (%)",
+    fill     = "Dropbacks"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title    = element_text(face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(color = "gray30", hjust = 0.5),
+    axis.text.x   = element_text(angle = 45, hjust = 1)
+  )
+```
+
+**Summary (Q1):**\
+The vertical bar chart is the strongest choice for comparing quarterbacks on a single percentage-based metric like **decision rate**, because it allows viewers to immediately identify who performs best. Sorting the bars from highest to lowest makes the top decision-makers easy to spot, while the color scale representing dropbacks adds important context about workload. This helps distinguish quarterbacks who were efficient on a high volume of plays from those who performed well on smaller samples.
+
+**Key findings from the graph:**\
+From this dataset, the chart shows that the highest decision rates belong to **Patrick Mahomes**, **Tua Tagovailoa**, and **Jared Goff**, who all sustain very high rates of effective decisions per dropback, even if the quarterback had less dropbacks than other quarterbacks. The difference between the top few quarterbacks and the rest of the top ten forms a clear “top tier,” while the remaining QBs in the chart are more tightly clustered. This indicates that a small group of passers consistently separate themselves in decision quality, while most of the league’s top performers operate within a narrower efficiency band.
+
+This visualization directly answers Question 1 by revealing which quarterbacks most consistently avoided negative outcomes and sustained offensive rhythm through effective decisions over the four-year window. For analysts, scouts, and coaching staff, this graph highlights the players who demonstrate reliable processing and decision quality—key components of drive sustainability and offensive success.
+
+------------------------------------------------------------------------
+
+## 4.2 - Decision Efficiency Index
+
+## 4.2.1 Question 2 — Which Quarterbacks frequently make effective decisions that sustain drives and improve offense efficiency?
+
+
+```{r decision_efficiency_index}
+qb_total_four_seasons_DEI_trimmed %>%
+  dplyr::arrange(desc(decision_efficiency_index)) %>%
+  dplyr::slice(1:10) %>%
+  ggplot(aes(
+    x = reorder(qb, decision_efficiency_index),
+    y = decision_efficiency_index,
+    fill = avg_epa,
+  )) +
+  geom_col(width = 0.6) +
+  coord_flip() +
+  scale_fill_viridis_c(option = "C") +
+  labs(
+    title = "Top 10 Quarterbacks By Decision Efficiency Index (2021-2024)",
+    subtitle = "Composite score of decision rate, epa, touchdowns, and turnovers",
+    caption = "300+ dropbacks per season",
+    x = "Quarterback",
+    y = "Decision Efficiency Index (%)",
+    fill = "Avg EPA"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(color = "gray30", hjust = 0.5),
+    plot.caption = element_text(color = "black", hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.minor = element_blank()
+  )
+```
+
+## 4.2.2 Minimum One Season (300+ Dropbacks)
+
+## 4.2.3 This is optional!
+
+
+```{r qb_total_DEI}
+qb_total_DEI %>%
+  arrange(desc(decision_efficiency_index)) %>%
+  slice(1:10) %>%
+  ggplot(aes(
+    x    = reorder(qb, -decision_efficiency_index),
+    y    = decision_efficiency_index,
+    fill = seasons_played
+  )) +
+  geom_col(width = 0.6) +
+  scale_fill_viridis_c(option = "C") +
+  labs(
+    title    = "Top 10 QBs by Decision Efficiency Index",
+    subtitle = "300+ dropbacks in any season from 2021–2024",
+    x        = "Quarterback",
+    y        = "Decision Efficiency Index (%)",
+    fill     = "Seasons Played"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    strip.text    = element_text(face = "bold"),
+    plot.title    = element_text(face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(color = "gray30", hjust = 0.5)
+  )
+```
+
+
+**Summary (Q2):**\
+These bar charts are ideal for displaying **rankings of a composite metric**, which makes them perfect for visualizing the Decision Efficiency Index (DEI). This DEI metric was calculated using the averages of each underlying component (decision rate, EPA, touchdowns, turnovers, and tempo—into a single score, and bar charts allow for quick and intuitive comparison across quarterbacks.
+
+**Key findings from the graphs:**\
+In the four-season DEI chart, quarterbacks like **Patrick Mahomes**, **Josh Allen**, and **Tua Tagovailoa** emerge as the most complete decision-makers, pairing strong decision rates with high EPA, healthy touchdown production, and controlled turnover profiles over the full sample. The color fill for average EPA reinforces that the highest-DEI quarterbacks also tend to drive the most efficient offenses. 
+
+**Optional deep dive:**  
+I was curious about how quarterbacks performed regardless of how many seasons they played, so I also calculated DEI for any QB with at least 300 dropbacks in a single season.In the minimum-one-season DEI chart, the rankings highlight high-impact quarterbacks such as **Brock Purdy** and **Jordan Love** who reached the 300+ dropback threshold and delivered standout overall efficiency even without four full seasons in the dataset. For these two quarterbacks to reach the Top 10 in this visual and have had a young career, means that these two quarterbacks are expected to have a long, fulfilling career. 
+
+On the other hand, seeing legacy quarterbacks such as **Tom Brady** and **Aaron Rodgers** appear inside the Top 10 is notable. Their presence reflects not only sustained performance late in their careers but also long-term mastery of processing speed, defensive recognition, and situational awareness. Analyzing how these veterans maintain such high decision efficiency despite aging curves, roster turnover, and changing schemes could be an entire case study of its own.
+
+Together, these visualizations directly answer Question 2 by identifying quarterbacks who combine consistency, efficiency, explosiveness, and ball security. For front offices and coaches, DEI surfaces the most complete decision-makers who can sustain drives and elevate offensive performance, while also distinguishing multi-year anchors from emerging or peak single-season performers.
+
+------------------------------------------------------------------------
+
+## 4.3 - Improvement or Decline Over Time
+
+## 4.3.1 Question 3 — Which Quarterbacks show consistent improvement or decline in decision efficiency over the four seasons?
+
+```{r qb_trend_data_plot}
+qb_trend_data %>%
+  ggplot(aes(
+    x = season,
+    y = decision_rate * 100
+  )) +
+  geom_line(size = 1.2, color = "#1f77b4") +
+  geom_point(size = 2, color = "#1f77b4") +
+  scale_x_continuous(breaks = c(2021, 2022, 2023, 2024)) +
+  facet_wrap(~ qb) +
+  labs(
+    title    = "QB Decision Efficiency Trends (2021–2024)",
+    subtitle = "Only QBs with all four seasons and 300+ dropbacks/year",
+    x        = "Season",
+    y        = "Decision Rate (%)"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    strip.text    = element_text(face = "bold"),
+    plot.title    = element_text(face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(color = "gray30", hjust = 0.5)
+  )
+```
+
+**Summary (Q3):**\
+This four-year trend visualization is designed to reveal how consistently each quarterback maintains their Decision Rate over time, focusing only on **QBs** with all four seasons and at least 300 dropbacks per year. Faceted Line charts are ideal here because they highlight trajectory, not just performance snapshots — improving the visuals improvement, decline, or stability across 2021–2024.
+
+**Key findings from the graphs:**\
+Several quarterbacks show clear upward progression in their decision-making discipline. **Baker Mayfield**, **Jared Goff**, **Lamar Jackson**, and **Tua Tagovailoa** all end 2024 at or near their highest Decision Rate over the entire sample, signaling refinement and stability as their offensive situations matured. Others display remarkable steadiness year over year — including **Josh Allen**, **Jalen Hurts**, and **Patrick Mahomes** — whose lines remain tightly clustered with minimal variance, reflecting highly stable processing and decision-making frameworks.
+
+A smaller group demonstrates more volatility. **Dak Prescott** peaks in 2022 before declining noticeably by 2024, while **Trevor Lawrence** and **Justin Herbert** show slight downward slides after early-season highs. **Russell Wilson** is the most inconsistent, bottoming out in 2022 before bouncing back. **Joe Burrow** stays mostly steady but shows a brief dip in 2023 before recovering in 2024.
+
+Overall, these trends provide essential context for DEI: they show not just who grades well on average, but how each quarterback arrived at those outcomes—whether through gradual improvement, consistent excellence, or fluctuating year-to-year performance.
+
+
+## 4.4 - Decision Effectiveness & Tempo 
+
+## 4.4.1 Question 4 — Is there a relationship between decision effectiveness and decision tempo that lead to overall drive success?
+```{r qb_total_four_seasons_DEI_plot}
+qb_total_decision_tempo <- qb_total_four_seasons_DEI %>%
+  ggplot(aes(
+    x = avg_decision_rate * 100,      # decision effectiveness (%)
+    y = avg_time_to_throw,            # tempo (seconds)
+    label = qb,
+    color = decision_efficiency_index
+  )) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = FALSE, size = 0.9, color = "red") +
+  geom_text_repel(
+    size = 4,
+    max.overlaps = Inf,
+    box.padding = 0.5,
+    point.padding = 0.3
+  ) +
+  scale_color_viridis_c(option = "C") +
+  labs(
+    title = "Relationship Between Decision Effectiveness & Tempo",
+    subtitle = "Do quicker decisions lead to more effective outcomes over 2021–2024?",
+    x = "Decision Effectiveness (%)",
+    y = "Average Time To Throw (seconds)",
+    color = "Decision Efficiency Index"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(color = "grey60", hjust = 0.5),
+    panel.grid.minor = element_blank()
+  )
+
+qb_total_decision_tempo
+```
+
+**Summary (Q4):**\ The scatterplot is the optimal choice for analyzing relationships between two continuous variables, making it ideal for evaluating how decision effectiveness interacts with decision tempo. Each point represents a quarterback’s combined efficiency and processing speed profile, while the regression line clarifies the overall direction of the relationship. 
+
+**Key findings from the graph:**\ In this dataset, the fitted regression line slopes downward, indicating that quarterbacks with **higher decision effectiveness(based off of the DEI) tend to have shorter average time to throw**. Many of the most efficient decision-makers cluster in the region with both relatively high decision rates and faster tempos, while less efficient quarterbacks appear more often in the slower-time-to-throw range. There may be a few outliers—such as **Lamar Jackson**, **Josh Allen**, & **Brock Purdy** who maintains above-average effectiveness despite a slightly longer time to throw—but the overall pattern supports the idea that **quick processing and decisive reads are associated with better outcomes.** 
+
+This visualization directly answers Question 4 by demonstrating a negative relationship between decision effectiveness and time to throw: quarterbacks who make faster decisions generally achieve higher effectiveness. Faster processing reduces pressure exposure, supports timing-based passing concepts, and maintains offensive rhythm. For coaches and coordinators, understanding this relationship helps refine scheme design and identify quarterbacks whose processing speed drives better offensive results. 
+
+------------------------------------------------------------------------
+
+# 5. **Share**
+
+## 5.1 Key Takeaways
+
+- **High decision efficiency correlates with positive outcomes.**  
+  Quarterbacks with higher decision rates and DEI scores more consistently sustain drives, avoid negative plays, and generate positive EPA.
+
+- **DEI surfaces the most complete decision-makers.**  
+  Because it blends decision rate, EPA, touchdowns, turnovers, and tempo, DEI highlights quarterbacks who balance efficiency, impact, and ball security.
+
+- **Trends highlight long-term risers and fallers.**  
+  Four-year decision efficiency trends reveal which quarterbacks are improving, plateauing, or declining, which is critical for long-term planning.
+
+- **Faster tempo generally supports better decision-making.**  
+  The negative relationship between time to throw and decision effectiveness suggests that quicker processors tend to produce better outcomes.
+
+## 5.2 Presenting to Stakeholders
+
+This analysis can be communicated and applied across several key stakeholder groups:
+
+### 5.2.1 Player Evaluation & Scouting
+
+- Identify quarterbacks with strong multi-year decision profiles.  
+- Highlight emerging players who already exhibit high DEI and decision rate.  
+- Flag potential regression risks through declining decision trends.
+
+### 5.2.2 Coaching & Scheme Development
+
+- Align offensive schemes with each quarterback’s processing strengths and tempo.  
+- Use decision efficiency and tempo metrics to refine route concepts, timing, and progression structures.  
+- Target coaching interventions for QBs with slower tempo or elevated turnover rates.
+
+### 5.2.3 Analytics & Front Office Decision-Making
+
+- Incorporate DEI and decision trends into contract, trade, and draft models.  
+- Combine DEI with salary and age curves to assess long-term value.  
+- Use decision metrics as an additional lens alongside EPA/play, CPOE, and traditional passer rating.
+
+### 5.2.4 Media, Endorsements & Narrative Analysis
+
+- Support deeper storytelling around which quarterbacks truly drive efficient offense.  
+- Use DEI and decision rate to contextualize highlight plays, awards, and legacy debates.  
+- Inform endorsement and branding decisions around quarterbacks who pair efficiency with stability.
+
+---
+
+# 6. **Act**
+
+## 6.1 Recommendations
+
+Based on the four-year analysis of quarterback decision-making, tempo, and efficiency, the following recommendations are proposed for coaching staff, analysts, and front office decision-makers:
+
+### 6.1.1 Integrate Decision Efficiency Index (DEI) Into Standard QB Evaluation
+
+- DEI proved to be a reliable, multi-factor measure of a quarterback’s ability to sustain drives, avoid negative plays, and generate positive EPA.  
+- Teams should incorporate DEI alongside traditional metrics (EPA/play, CPOE, passer rating) to gain a fuller picture of QB performance.
+
+### 6.1.2 Emphasize QBs With Multi-Year Positive Trends
+
+- Quarterbacks who showed continuous improvement from 2021 to 2024 (such as **Tua Tagovailoa** and **Patrick Mahomes**) demonstrate stable development patterns.  
+- These players represent low-risk, high-stability options for long-term schemes and system planning.
+
+### 6.1.3 Use Decision Tempo as a Diagnostic Tool
+
+- Faster average time to throw correlates with higher decision effectiveness in this dataset.  
+- Teams should monitor tempo to:
+  - Identify processing-speed improvements or regressions  
+  - Evaluate QB fit with quick-game vs. deep-dropback schemes  
+  - Detect pressure-handling issues before they manifest as turnovers  
+
+### 6.1.4 Prioritize Quarterbacks With High Decision Volume & High Decision Quality
+
+- Dropbacks represent opportunity, but DEI and decision rate capture quality.  
+- Quarterbacks who rank highly in both categories are the most dependable leaders of sustainable offense.
+
+### 6.1.5 Apply Findings to Scheme Design
+
+- Build offenses that reinforce quick, high-confidence decision pathways.  
+- Use motion and spread concepts to help slower processors.  
+- Increase timing-based routes for QBs with high tempo and high DEI profiles.
+
+## 6.2 Next Steps
+
+### 6.2.1 Expand the Dataset to 10 Seasons
+
+A decade-long dataset would:
+
+- Reveal deeper efficiency and tempo evolution.  
+- Highlight outliers in long-term QB development.  
+- Strengthen comparisons across eras, systems, and coaching staffs.
+
+### 6.2.2 Add Situational Decision Efficiency Metrics
+
+DEI can be extended to:
+
+- 3rd-down DEI  
+- Red zone DEI  
+- Two-minute drill DEI  
+- Play-action vs. straight dropback DEI  
+
+These situational splits would help identify QBs with specialized strengths and pressure performance.
+
+### 6.2.3 Include Pressure-Based Decision Metrics
+
+Integrating Next Gen Stats pressure variables could help answer:
+
+- How does decision tempo change under pressure?  
+- Which QBs maintain high DEI in collapsing pockets?  
+- How do blitz-heavy defenses affect effectiveness?
+
+### 6.2.4 Explore Drive-Level Efficiency
+
+A future iteration could model:
+
+- Expected points per drive  
+- Drive success rate  
+- Conversion efficiency (first downs gained per opportunity)  
+
+This would strengthen the connection between QB decision quality and actual scoring output.
+
+### 6.2.5 Extend the Framework Beyond QBs
+
+This DEI framework could be adapted for:
+
+- Running backs (run decision efficiency)  
+- Wide receivers (separation and YAC decisions)  
+- Defensive backs (target decision efficiency)  
+- Future sports analytics projects.
+
+### 6.2.6 Build a Public Dashboard or Coaching Report
+
+Future deliverable could include:
+
+- **A Shiny app for interactive DEI exploration(coming soon).**  
+- A Tableau dashboard for trend and ranking visuals.  
+- A coaching report with player-specific recommendations and decision profiles.
