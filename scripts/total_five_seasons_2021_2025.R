@@ -8,7 +8,7 @@ qb_total_five_seasons <- dplyr::bind_rows(
 ) %>%
   dplyr::arrange(season, dplyr::desc(decision_rate))
 
-#Create a table to find the average for each quarterback over the half five seasons
+#Create a table to find the average for each quarterback over the five seasons
 qb_total_five_seasons <- qb_total_five_seasons %>%
   dplyr::group_by(qb) %>%
   dplyr::summarise(
@@ -22,4 +22,5 @@ qb_total_five_seasons <- qb_total_five_seasons %>%
     avg_touchdowns     = mean(total_pass_touchdowns, na.rm = TRUE),
     .groups = "drop"
   ) %>%
+
   dplyr::arrange(dplyr::desc(avg_decision_rate))
